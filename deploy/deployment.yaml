@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  labels:
+    app: flask-app
+spec:
+  selector:
+    matchLabels:
+      app: flask-app
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: flask-app
+        tier: frontend
+    spec:
+      containers:
+      - image: koteikin/flask-app:4
+        name: flask-app
+        env:
+      env:
+        - name: FLASK_APP
+          value: api.py
+        - name: FLASK_ENV
+          value: development
+        - name: DB_USERNAME
+          value: user
+        - name: DB_NAME
+          value: db
+        - name: DB_HOSTNAME
+          value: db
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-password
+      ports:
+      - containerPort: 5000
+        name: flask-app
